@@ -62,61 +62,61 @@ namespace MemorySnapshotViewer
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MemorySnapshotViewer));
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.treeListView1 = new System.Windows.Forms.ListView();
-            this.name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.allocRawSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.allocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.allocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sumAllocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sumAllocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sumDeallocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sumDeallocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.allocType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.SuspendLayout();
-            // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "");
-            this.imageList1.Images.SetKeyName(1, "");
-            this.imageList1.Images.SetKeyName(2, "");
-            this.imageList1.Images.SetKeyName(3, "");
-            // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button1.Location = new System.Drawing.Point(21, 637);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(291, 49);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "打开Snapshot";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button2.Location = new System.Drawing.Point(838, 637);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(333, 49);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Expand / Collapse All";
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // treeListView1
-            // 
-            this.treeListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MemorySnapshotViewer));
+			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.button1 = new System.Windows.Forms.Button();
+			this.button2 = new System.Windows.Forms.Button();
+			this.treeListView1 = new System.Windows.Forms.ListView();
+			this.name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.allocRawSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.allocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.allocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.sumAllocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.sumAllocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.sumDeallocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.sumDeallocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.allocType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.SuspendLayout();
+			// 
+			// imageList1
+			// 
+			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList1.Images.SetKeyName(0, "");
+			this.imageList1.Images.SetKeyName(1, "");
+			this.imageList1.Images.SetKeyName(2, "");
+			this.imageList1.Images.SetKeyName(3, "");
+			// 
+			// button1
+			// 
+			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.button1.Location = new System.Drawing.Point(16, 652);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(224, 36);
+			this.button1.TabIndex = 1;
+			this.button1.Text = "打开Snapshot";
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
+			// button2
+			// 
+			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.button2.Location = new System.Drawing.Point(920, 652);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(256, 36);
+			this.button2.TabIndex = 2;
+			this.button2.Text = "Expand / Collapse All";
+			this.button2.Click += new System.EventHandler(this.button2_Click);
+			// 
+			// treeListView1
+			// 
+			this.treeListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeListView1.CheckBoxes = true;
-            this.treeListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.treeListView1.CheckBoxes = true;
+			this.treeListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.name,
             this.allocRawSize,
             this.allocBytes,
@@ -126,73 +126,73 @@ namespace MemorySnapshotViewer
             this.sumDeallocBytes,
             this.sumDeallocCount,
             this.allocType});
-            this.treeListView1.FullRowSelect = true;
-            this.treeListView1.GridLines = true;
-            this.treeListView1.HideSelection = false;
-            this.treeListView1.Location = new System.Drawing.Point(0, 0);
-            this.treeListView1.Name = "treeListView1";
-            this.treeListView1.Size = new System.Drawing.Size(1193, 631);
-            this.treeListView1.TabIndex = 0;
-            this.treeListView1.UseCompatibleStateImageBehavior = false;
-            this.treeListView1.View = System.Windows.Forms.View.Details;
-            this.treeListView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.treeListView1_ItemChecked);
-            // 
-            // name
-            // 
-            this.name.Text = "name";
-            this.name.Width = 250;
-            // 
-            // allocRawSize
-            // 
-            this.allocRawSize.Text = "allocRawSize";
-            this.allocRawSize.Width = 130;
-            // 
-            // allocBytes
-            // 
-            this.allocBytes.Text = "allocBytes";
-            this.allocBytes.Width = 130;
-            // 
-            // allocCount
-            // 
-            this.allocCount.Text = "allocCount";
-            this.allocCount.Width = 130;
-            // 
-            // sumAllocBytes
-            // 
-            this.sumAllocBytes.Text = "sumAllocBytes";
-            this.sumAllocBytes.Width = 130;
-            // 
-            // sumAllocCount
-            // 
-            this.sumAllocCount.Text = "sumAllocCount";
-            this.sumAllocCount.Width = 130;
-            // 
-            // sumDeallocBytes
-            // 
-            this.sumDeallocBytes.Text = "sumDeallocBytes";
-            this.sumDeallocBytes.Width = 130;
-            // 
-            // sumDeallocCount
-            // 
-            this.sumDeallocCount.Text = "sumDeallocCount";
-            this.sumDeallocCount.Width = 130;
-            // 
-            // allocType
-            // 
-            this.allocType.Text = "allocType";
-            this.allocType.Width = 130;
-            // 
-            // MemorySnapshotViewer
-            // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(13, 28);
-            this.ClientSize = new System.Drawing.Size(1192, 695);
-            this.Controls.Add(this.treeListView1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Name = "MemorySnapshotViewer";
-            this.Text = "MemorySnapshotViewer";
-            this.Load += new System.EventHandler(this.MemorySnapshotViewer_Load);
-            this.ResumeLayout(false);
+			this.treeListView1.FullRowSelect = true;
+			this.treeListView1.GridLines = true;
+			this.treeListView1.HideSelection = false;
+			this.treeListView1.Location = new System.Drawing.Point(0, 0);
+			this.treeListView1.Name = "treeListView1";
+			this.treeListView1.Size = new System.Drawing.Size(1193, 647);
+			this.treeListView1.TabIndex = 0;
+			this.treeListView1.UseCompatibleStateImageBehavior = false;
+			this.treeListView1.View = System.Windows.Forms.View.Details;
+			this.treeListView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.treeListView1_ItemChecked);
+			// 
+			// name
+			// 
+			this.name.Text = "name";
+			this.name.Width = 250;
+			// 
+			// allocRawSize
+			// 
+			this.allocRawSize.Text = "allocRawSize";
+			this.allocRawSize.Width = 130;
+			// 
+			// allocBytes
+			// 
+			this.allocBytes.Text = "allocBytes";
+			this.allocBytes.Width = 130;
+			// 
+			// allocCount
+			// 
+			this.allocCount.Text = "allocCount";
+			this.allocCount.Width = 130;
+			// 
+			// sumAllocBytes
+			// 
+			this.sumAllocBytes.Text = "sumAllocBytes";
+			this.sumAllocBytes.Width = 130;
+			// 
+			// sumAllocCount
+			// 
+			this.sumAllocCount.Text = "sumAllocCount";
+			this.sumAllocCount.Width = 130;
+			// 
+			// sumDeallocBytes
+			// 
+			this.sumDeallocBytes.Text = "sumDeallocBytes";
+			this.sumDeallocBytes.Width = 130;
+			// 
+			// sumDeallocCount
+			// 
+			this.sumDeallocCount.Text = "sumDeallocCount";
+			this.sumDeallocCount.Width = 130;
+			// 
+			// allocType
+			// 
+			this.allocType.Text = "allocType";
+			this.allocType.Width = 130;
+			// 
+			// MemorySnapshotViewer
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(10, 21);
+			this.ClientSize = new System.Drawing.Size(1192, 695);
+			this.Controls.Add(this.treeListView1);
+			this.Controls.Add(this.button2);
+			this.Controls.Add(this.button1);
+			this.Name = "MemorySnapshotViewer";
+			this.Text = "MemorySnapshotViewer";
+			this.Load += new System.EventHandler(this.MemorySnapshotViewer_Load);
+			this.ResumeLayout(false);
 
         }
         #endregion
