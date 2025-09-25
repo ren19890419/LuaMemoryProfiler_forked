@@ -51,9 +51,22 @@ MemoryStat* LuaMemoryProfiler::allocMemoryStat(const char* stackString, size_t s
 			_memoryStatBuffer.push_back(pool);
 		}
 		MemoryStat* stat = (MemoryStat*)(pool->buff + pool->offset);
+		//memset(pool->buff + pool->offset, 0, sizeof(MemoryStat));
+		stat->allocBytes = 0;
+		stat->allocCount = 0;
+		stat->sumAllocBytes = 0;
+		stat->sumAllocCount = 0;
+		stat->sumDeallocBytes = 0;
+		stat->sumDeallocCount = 0;
+		stat->gcObjectRawSize = 0;
+		stat->allocType = 0;
 		pool->offset += size;
 		memcpy(stat->stackString, stackString, stackStringSize + 1);
 		iter = _memoryStates.insert(std::make_pair((const char*)stat->stackString, stat)).first;
+	}
+	else
+	{
+		 volatile int debug = 1;
 	}
 
 	return iter->second;
@@ -326,7 +339,7 @@ extern "C"
 	void _writeSnapshotXml(const MemorySnapshot& a, FILE* f, int level)
 	{
 		std::string tab(level, '\t');
-		fprintf(f, "%s<node name=\"%s\" rawSize=\"%d\" allocBytes=\"%d\" allocCount=\"%d\" sumAllocBytes=\"%d\" sumAllocCount=\"%d\" sumDeallocBytes=\"%d\" sumDeallocCount=\"%d\" allocType=\"%d\">\n"
+		fprintf(f, "%s<node name=\"%s\" rawSize=\"%I64d\" allocBytes=\"%I64d\" allocCount=\"%I64d\" sumAllocBytes=\"%I64d\" sumAllocCount=\"%I64d\" sumDeallocBytes=\"%I64d\" sumDeallocCount=\"%I64d\" allocType=\"%d\">\n"
 			, tab.c_str()
 			, a.name.c_str()
 			, a.stat.gcObjectRawSize

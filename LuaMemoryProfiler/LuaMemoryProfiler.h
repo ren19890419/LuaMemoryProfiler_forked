@@ -31,19 +31,19 @@ struct MemoryStat
 
 	}
 	//  记录gc对象额外占用的空间，例如table的数组slot
-	int gcObjectRawSize;
+	size_t gcObjectRawSize;
 	// 当前内存存量字节（分配时累加，释放时减少）
-	int allocBytes;
+	size_t allocBytes;
 	// 当前内存存量次数（分配时+1，释放时-1）
-	int allocCount;
+	size_t allocCount;
 	// 累计内存分配字节（分配时累加）
-	int sumAllocBytes;
+	size_t sumAllocBytes;
 	// 累计内存分配次数（分配时+1）
-	int sumAllocCount;
+	size_t sumAllocCount;
 	// 累计内存释放字节（释放时减去）
-	int sumDeallocBytes;
+	size_t sumDeallocBytes;
 	// 累计内存释放次数（分配时-1）
-	int sumDeallocCount;
+	size_t sumDeallocCount;
 	//  数据类型，用位来表达不同类型混合在一个地方创建类似这样（如果包含表格和字符串，则等于1 << LUA_TTABLE | 1 << LUA_TSTRING）
 	int allocType;
 	// 分配时的堆栈
@@ -76,18 +76,18 @@ struct MemoryStat
 	// 记录一次内存分配操作
 	void recordAlloc(size_t allocBytes)
 	{
-		this->allocBytes += (int)allocBytes;
+		this->allocBytes += allocBytes;
 		this->allocCount++;
-		this->sumAllocBytes += (int)allocBytes;
+		this->sumAllocBytes += allocBytes;
 		this->sumAllocCount++;
 	}
 
 	// 记录一次内存释放操作
 	void recordDealloc(size_t deallocBytes)
 	{
-		this->allocBytes -= (int)deallocBytes;
+		this->allocBytes -= deallocBytes;
 		this->allocCount--;
-		this->sumDeallocBytes += (int)deallocBytes;
+		this->sumDeallocBytes += deallocBytes;
 		this->sumDeallocCount++;
 	}
 };
