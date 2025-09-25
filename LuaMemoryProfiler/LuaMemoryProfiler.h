@@ -11,6 +11,7 @@ extern "C"
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 
 // 相同调用栈下的内存分配/释放统计
