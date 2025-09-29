@@ -340,18 +340,37 @@ namespace MemorySnapshotViewer
             Application.Run(new MemorySnapshotViewer());
         }
 
-        // Implements the manual sorting of items by columns.
-        class NodeComparer : IComparer<Node>
-        {
-            public SortOrder Order = SortOrder.Descending;
-            public int SortColumn = 1;
-            public int Compare(Node x, Node y)
-            {
-                int result = x.GetSubItem(SortColumn) - y.GetSubItem(SortColumn);
-                return Order == SortOrder.Ascending ? result : -result;
-            }
-        }
-        NodeComparer lvwColumnSorter;
+		// Implements the manual sorting of items by columns.
+		class NodeComparer : IComparer<Node>
+		{
+			public SortOrder Order = SortOrder.Descending;
+			public int SortColumn = 1;
+
+			public int Compare(Node x, Node y)
+			{
+				// 处理 null
+				if (x == null && y == null) return 0;
+				if (x == null) return Order == SortOrder.Ascending ? -1 : 1;
+				if (y == null) return Order == SortOrder.Ascending ? 1 : -1;
+
+				int result;
+
+				// 列 0 是名称（字符串），其他列使用 long 比较
+				if (SortColumn == 0)
+				{
+					result = string.Compare(x.name ?? string.Empty, y.name ?? string.Empty, StringComparison.CurrentCultureIgnoreCase);
+				}
+				else
+				{
+					long a = (SortColumn == 1) ? x.allocRawSize : x.GetSubItem(SortColumn);
+					long b = (SortColumn == 1) ? y.allocRawSize : y.GetSubItem(SortColumn);
+					result = a.CompareTo(b); // 返回 int，安全且无溢出
+				}
+
+				return Order == SortOrder.Ascending ? result : -result;
+			}
+		}
+		NodeComparer lvwColumnSorter;
 
         private void MemorySnapshotViewer_Load(object sender, System.EventArgs e)
         {
@@ -525,15 +544,15 @@ namespace MemorySnapshotViewer
             public int level;
             public Node parent;
             public string name;
-            public int rawSize;
-            public int allocBytes;
-            public int allocCount;
-            public int sumAllocBytes;
-            public int sumAllocCount;
-            public int sumDeallocBytes;
-            public int sumDeallocCount;
-            public int allocType;
-            public int GetSubItem(int index)
+            public long rawSize;
+            public long allocBytes;
+            public long allocCount;
+            public long sumAllocBytes;
+            public long sumAllocCount;
+            public long sumDeallocBytes;
+            public long sumDeallocCount;
+            public long allocType;
+            public long GetSubItem(int index)
             {
                 switch (index)
                 {
@@ -551,7 +570,7 @@ namespace MemorySnapshotViewer
 
             public List<Node> children = new List<Node>();
 
-            public int allocRawSize
+            public long allocRawSize
             {
                 get
                 {
@@ -607,14 +626,14 @@ namespace MemorySnapshotViewer
             node.parent = parent;
             node.level = level;
             node.name = element.Attribute("name")?.Value;
-            node.allocBytes = int.Parse(element.Attribute("allocBytes")?.Value);
-            node.rawSize = int.Parse(element.Attribute("rawSize")?.Value);
-            node.allocCount = int.Parse(element.Attribute("allocCount")?.Value);
-            node.sumAllocBytes = int.Parse(element.Attribute("sumAllocBytes")?.Value);
-            node.sumAllocCount = int.Parse(element.Attribute("sumAllocCount")?.Value);
-            node.sumDeallocBytes = int.Parse(element.Attribute("sumDeallocBytes")?.Value);
-            node.sumDeallocCount = int.Parse(element.Attribute("sumDeallocCount")?.Value);
-            node.allocType = int.Parse(element.Attribute("allocType")?.Value);
+            node.allocBytes = long.Parse(element.Attribute("allocBytes")?.Value);
+            node.rawSize = long.Parse(element.Attribute("rawSize")?.Value);
+            node.allocCount = long.Parse(element.Attribute("allocCount")?.Value);
+            node.sumAllocBytes = long.Parse(element.Attribute("sumAllocBytes")?.Value);
+            node.sumAllocCount = long.Parse(element.Attribute("sumAllocCount")?.Value);
+            node.sumDeallocBytes = long.Parse(element.Attribute("sumDeallocBytes")?.Value);
+            node.sumDeallocCount = long.Parse(element.Attribute("sumDeallocCount")?.Value);
+            node.allocType = long.Parse(element.Attribute("allocType")?.Value);
 
             if (element.HasElements)
             {
