@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace MemorySnapshotViewer
 {
@@ -36,6 +38,12 @@ namespace MemorySnapshotViewer
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 
+        // Help 菜单项（新增）
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewHelpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator helpToolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+
         // 示例设置字段（可扩展为持久化）
         private bool _showRawSizes = false;
 
@@ -53,7 +61,7 @@ namespace MemorySnapshotViewer
         private enum ThemePreset { Light, Dark, Solarized, HighContrast }
         private ThemePreset _themePreset = ThemePreset.Light;
         private string _uiFontFamily = SystemFonts.DefaultFont.FontFamily.Name;
-        private FontStyle _uiFontStyle = FontStyle.Regular;
+		private FontStyle _uiFontStyle = FontStyle.Regular;
 
         public MemorySnapshotViewer()
         {
@@ -107,15 +115,17 @@ namespace MemorySnapshotViewer
 			this.sumDeallocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.sumDeallocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.allocType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-
-			// 新增：菜单控件实例化
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-
+			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.viewHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.helpToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// imageList1
@@ -149,51 +159,6 @@ namespace MemorySnapshotViewer
 			this.button2.Text = "Expand / Collapse All";
 			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
-			// menuStrip1
-			// 
-			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(1192, 24);
-			this.menuStrip1.TabIndex = 3;
-			this.menuStrip1.Text = "menuStrip1";
-			// 
-			// fileToolStripMenuItem
-			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
-            this.settingsToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-			this.fileToolStripMenuItem.Text = "File";
-			// 
-			// openToolStripMenuItem
-			// 
-			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.openToolStripMenuItem.Text = "Open";
-			this.openToolStripMenuItem.Click += new System.EventHandler(this.button1_Click);
-			// 
-			// settingsToolStripMenuItem
-			// 
-			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-			this.settingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemcomma)));
-			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.settingsToolStripMenuItem.Text = "Settings...";
-			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-			// 
-			// exitToolStripMenuItem
-			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.exitToolStripMenuItem.Text = "Exit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-			// 
 			// treeListView1
 			// 
 			this.treeListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -213,11 +178,9 @@ namespace MemorySnapshotViewer
 			this.treeListView1.FullRowSelect = true;
 			this.treeListView1.GridLines = true;
 			this.treeListView1.HideSelection = false;
-			// 下移 ListView 以避开菜单栏
-			this.treeListView1.Location = new System.Drawing.Point(0, 24);
+			this.treeListView1.Location = new System.Drawing.Point(0, 35);
 			this.treeListView1.Name = "treeListView1";
-			// 减少高度以适配菜单条
-			this.treeListView1.Size = new System.Drawing.Size(1193, 623);
+			this.treeListView1.Size = new System.Drawing.Size(1193, 612);
 			this.treeListView1.TabIndex = 0;
 			this.treeListView1.UseCompatibleStateImageBehavior = false;
 			this.treeListView1.View = System.Windows.Forms.View.Details;
@@ -268,20 +231,103 @@ namespace MemorySnapshotViewer
 			this.allocType.Text = "allocType";
 			this.allocType.Width = 130;
 			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
+			this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.helpToolStripMenuItem});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(1192, 32);
+			this.menuStrip1.TabIndex = 3;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
+			// fileToolStripMenuItem
+			// 
+			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
+			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(56, 28);
+			this.fileToolStripMenuItem.Text = "File";
+			// 
+			// openToolStripMenuItem
+			// 
+			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(352, 34);
+			this.openToolStripMenuItem.Text = "Open";
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.button1_Click);
+			// 
+			// settingsToolStripMenuItem
+			// 
+			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+			this.settingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemcomma)));
+			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(352, 34);
+			this.settingsToolStripMenuItem.Text = "Settings...";
+			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(349, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(352, 34);
+			this.exitToolStripMenuItem.Text = "Exit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
+			// helpToolStripMenuItem
+			// 
+			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewHelpToolStripMenuItem,
+            this.helpToolStripSeparator,
+            this.aboutToolStripMenuItem});
+			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+			this.helpToolStripMenuItem.Size = new System.Drawing.Size(67, 28);
+			this.helpToolStripMenuItem.Text = "Help";
+			// 
+			// viewHelpToolStripMenuItem
+			// 
+			this.viewHelpToolStripMenuItem.Name = "viewHelpToolStripMenuItem";
+			this.viewHelpToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+			this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			this.viewHelpToolStripMenuItem.Text = "View Help";
+			this.viewHelpToolStripMenuItem.Click += new System.EventHandler(this.viewHelpToolStripMenuItem_Click);
+			// 
+			// helpToolStripSeparator
+			// 
+			this.helpToolStripSeparator.Name = "helpToolStripSeparator";
+			this.helpToolStripSeparator.Size = new System.Drawing.Size(267, 6);
+			// 
+			// aboutToolStripMenuItem
+			// 
+			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			this.aboutToolStripMenuItem.Text = "About";
+			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+			// 
 			// MemorySnapshotViewer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(10, 21);
 			this.ClientSize = new System.Drawing.Size(1192, 695);
-			// 将菜单条设为主菜单
-			this.MainMenuStrip = this.menuStrip1;
-			// 菜单应先加入控件集合以确保显示在顶部
 			this.Controls.Add(this.menuStrip1);
 			this.Controls.Add(this.treeListView1);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
+			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MemorySnapshotViewer";
 			this.Text = "MemorySnapshotViewer";
 			this.Load += new System.EventHandler(this.MemorySnapshotViewer_Load);
+			this.menuStrip1.ResumeLayout(false);
+			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -397,6 +443,38 @@ namespace MemorySnapshotViewer
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        // 新增：View Help (F1) - 优先打开同目录 README.md，否则打开仓库主页
+        private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string exeDir = AppDomain.CurrentDomain.BaseDirectory;
+                string readme = Path.Combine(exeDir, "README.md");
+                if (File.Exists(readme))
+                {
+                    var psi = new ProcessStartInfo { FileName = readme, UseShellExecute = true };
+                    Process.Start(psi);
+                }
+                else
+                {
+                    // 如需改为本地 HTML 或其他文档，请修改此 URL
+                    var psi = new ProcessStartInfo { FileName = "https://github.com/ren19890419/LuaMemoryProfiler_forked", UseShellExecute = true };
+                    Process.Start(psi);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("无法打开帮助: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // 新增：About 对话
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "MemorySnapshotViewer\n版本: 1.0\n仓库: https://github.com/ren19890419/LuaMemoryProfiler_forked";
+            MessageBox.Show(msg, "关于", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         bool _allopen = false;
