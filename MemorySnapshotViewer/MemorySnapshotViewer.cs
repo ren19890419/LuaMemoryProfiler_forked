@@ -11,7 +11,7 @@ namespace MemorySnapshotViewer
     /// <summary>
     /// Summary description for MemorySnapshotViewer.
     /// </summary>
-    public class MemorySnapshotViewer : System.Windows.Forms.Form
+    public partial class MemorySnapshotViewer : System.Windows.Forms.Form
     {
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Button button1;
@@ -28,12 +28,36 @@ namespace MemorySnapshotViewer
         private ListView treeListView1;
         private System.ComponentModel.IContainer components;
 
+        // 新增：主菜单相关控件（包含 Settings）
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+
+        // 示例设置字段（可扩展为持久化）
+        private bool _showRawSizes = false;
+
+        // 新增：主题枚举与设置字段
+        private enum ThemeMode { Light, Dark }
+        private ThemeMode _theme = ThemeMode.Light;
+        private float _uiFontSize = 9.0f;
+
+        // 新增：语言枚举、主题色与字体大小等设置字段
+        private enum UiLanguage { English = 0, Chinese = 1 }
+        private UiLanguage _uiLanguage = UiLanguage.Chinese;
+        private Color _themeColor = SystemColors.Window;
+
         public MemorySnapshotViewer()
         {
             //
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+
+            // 新增：初始化右键菜单
+            InitializeContextMenu();
 
             //
             // TODO: Add any constructor code after InitializeComponent call
@@ -77,6 +101,15 @@ namespace MemorySnapshotViewer
 			this.sumDeallocBytes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.sumDeallocCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.allocType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+
+			// 新增：菜单控件实例化
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
 			this.SuspendLayout();
 			// 
 			// imageList1
@@ -110,6 +143,51 @@ namespace MemorySnapshotViewer
 			this.button2.Text = "Expand / Collapse All";
 			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(1192, 24);
+			this.menuStrip1.TabIndex = 3;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
+			// fileToolStripMenuItem
+			// 
+			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
+			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+			this.fileToolStripMenuItem.Text = "File";
+			// 
+			// openToolStripMenuItem
+			// 
+			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.openToolStripMenuItem.Text = "Open";
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.button1_Click);
+			// 
+			// settingsToolStripMenuItem
+			// 
+			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+			this.settingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemcomma)));
+			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.settingsToolStripMenuItem.Text = "Settings...";
+			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exitToolStripMenuItem.Text = "Exit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
 			// treeListView1
 			// 
 			this.treeListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -129,9 +207,11 @@ namespace MemorySnapshotViewer
 			this.treeListView1.FullRowSelect = true;
 			this.treeListView1.GridLines = true;
 			this.treeListView1.HideSelection = false;
-			this.treeListView1.Location = new System.Drawing.Point(0, 0);
+			// 下移 ListView 以避开菜单栏
+			this.treeListView1.Location = new System.Drawing.Point(0, 24);
 			this.treeListView1.Name = "treeListView1";
-			this.treeListView1.Size = new System.Drawing.Size(1193, 647);
+			// 减少高度以适配菜单条
+			this.treeListView1.Size = new System.Drawing.Size(1193, 623);
 			this.treeListView1.TabIndex = 0;
 			this.treeListView1.UseCompatibleStateImageBehavior = false;
 			this.treeListView1.View = System.Windows.Forms.View.Details;
@@ -186,6 +266,10 @@ namespace MemorySnapshotViewer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(10, 21);
 			this.ClientSize = new System.Drawing.Size(1192, 695);
+			// 将菜单条设为主菜单
+			this.MainMenuStrip = this.menuStrip1;
+			// 菜单应先加入控件集合以确保显示在顶部
+			this.Controls.Add(this.menuStrip1);
 			this.Controls.Add(this.treeListView1);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
@@ -193,6 +277,7 @@ namespace MemorySnapshotViewer
 			this.Text = "MemorySnapshotViewer";
 			this.Load += new System.EventHandler(this.MemorySnapshotViewer_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
         #endregion
@@ -221,6 +306,8 @@ namespace MemorySnapshotViewer
             lvwColumnSorter = new NodeComparer();
             treeListView1.ColumnClick += TreeListView1_ColumnClick;
 
+            // 新增：应用初始设置
+            ApplySettings();
         }
 
         private void TreeListView1_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -270,6 +357,34 @@ namespace MemorySnapshotViewer
                 treeListView1.Items.Clear();
                 LoadXmlTree(pOpenFileDialog.FileName);
             }
+        }
+
+        // 新增：Settings 菜单项处理
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new SettingsForm(_uiLanguage, _themeColor, _uiFontSize))
+            {
+                if (dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    _uiLanguage = dlg.SelectedLanguage;
+                    _themeColor = dlg.SelectedColor;
+                    _uiFontSize = dlg.SelectedFontSize;
+
+                    ApplySettings();
+
+                    // 可选：持久化设置到项目设置
+                    // Properties.Settings.Default.ThemeColor = ColorTranslator.ToHtml(_themeColor);
+                    // Properties.Settings.Default.FontSize = (double)_uiFontSize;
+                    // Properties.Settings.Default.Language = (int)_uiLanguage;
+                    // Properties.Settings.Default.Save();
+                }
+            }
+        }
+
+        // 新增：Exit 菜单项处理
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         bool _allopen = false;
@@ -499,6 +614,149 @@ namespace MemorySnapshotViewer
             e.Item.Text = node.displayName;
             isUpdating = false;
             treeListView1.EndUpdate();
+        }
+
+        // 新增：应用设置到 UI
+        private void ApplySettings()
+        {
+            // 字体
+            try
+            {
+                var newFont = new Font(this.Font.FontFamily, _uiFontSize);
+                this.Font = newFont;
+                treeListView1.Font = newFont;
+            }
+            catch { /* 忽略字体错误 */ }
+
+            // 主题色（示例：把选色应用为 ListView 背景色，并调整前景）
+            treeListView1.BackColor = _themeColor;
+            // 根据亮度选择前景色（黑或白）
+            var brightness = (_themeColor.R * 0.299 + _themeColor.G * 0.587 + _themeColor.B * 0.114) / 255.0;
+            treeListView1.ForeColor = brightness < 0.5 ? Color.White : Color.Black;
+
+            // 更新界面文本（简单运行时切换）
+            UpdateUiStrings();
+        }
+
+        // 新增：运行时更新界面文本（便于演示语言切换）
+        private void UpdateUiStrings()
+        {
+            if (_uiLanguage == UiLanguage.Chinese)
+            {
+                button1.Text = "打开Snapshot";
+                button2.Text = "展开/折叠全部";
+                name.Text = "名称";
+                allocRawSize.Text = "原始大小";
+                allocBytes.Text = "allocBytes";
+                allocCount.Text = "allocCount";
+                sumAllocBytes.Text = "sumAllocBytes";
+                sumAllocCount.Text = "sumAllocCount";
+                sumDeallocBytes.Text = "sumDeallocBytes";
+                sumDeallocCount.Text = "sumDeallocCount";
+                allocType.Text = "类型";
+                this.Text = "MemorySnapshotViewer";
+                // 如果你有 MenuStrip 或 ContextMenu，需要在它们也更新文本（若存在，检查字段并赋值）
+            }
+            else
+            {
+                button1.Text = "Open Snapshot";
+                button2.Text = "Expand / Collapse All";
+                name.Text = "name";
+                allocRawSize.Text = "allocRawSize";
+                allocBytes.Text = "allocBytes";
+                allocCount.Text = "allocCount";
+                sumAllocBytes.Text = "sumAllocBytes";
+                sumAllocCount.Text = "sumAllocCount";
+                sumDeallocBytes.Text = "sumDeallocBytes";
+                sumDeallocCount.Text = "sumDeallocCount";
+                allocType.Text = "allocType";
+                this.Text = "MemorySnapshotViewer";
+            }
+        }
+
+        // 新增：轻量设置对话框（内嵌类，便于直接复制）
+        private class SettingsForm : Form
+        {
+            private ComboBox cbLanguage;
+            private Button btnColor;
+            private NumericUpDown nudFontSize;
+            private Button btnOk;
+            private Button btnCancel;
+            private Panel pnlColorPreview;
+
+            public UiLanguage SelectedLanguage { get; private set; }
+            public Color SelectedColor { get; private set; }
+            public float SelectedFontSize { get; private set; }
+
+            public SettingsForm(UiLanguage currentLang, Color currentColor, float currentFontSize)
+            {
+                this.Text = "Settings";
+                this.FormBorderStyle = FormBorderStyle.FixedDialog;
+                this.StartPosition = FormStartPosition.CenterParent;
+                this.ClientSize = new Size(360, 160);
+                this.MaximizeBox = false;
+                this.MinimizeBox = false;
+
+                var lblLang = new Label { Left = 12, Top = 12, Width = 100, Text = "Language:" };
+                cbLanguage = new ComboBox { Left = 120, Top = 8, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+                cbLanguage.Items.Add("English");
+                cbLanguage.Items.Add("中文");
+                cbLanguage.SelectedIndex = currentLang == UiLanguage.Chinese ? 1 : 0;
+
+                var lblColor = new Label { Left = 12, Top = 44, Width = 100, Text = "Theme color:" };
+                btnColor = new Button { Left = 120, Top = 40, Width = 120, Text = "Choose..." };
+                pnlColorPreview = new Panel { Left = 250, Top = 40, Width = 40, Height = 22, BorderStyle = BorderStyle.FixedSingle, BackColor = currentColor };
+
+                btnColor.Click += (s, e) =>
+                {
+                    using (var cd = new ColorDialog())
+                    {
+                        cd.Color = pnlColorPreview.BackColor;
+                        if (cd.ShowDialog(this) == DialogResult.OK)
+                        {
+                            pnlColorPreview.BackColor = cd.Color;
+                        }
+                    }
+                };
+
+                var lblFont = new Label { Left = 12, Top = 80, Width = 100, Text = "Font size:" };
+                nudFontSize = new NumericUpDown
+                {
+                    Left = 120,
+                    Top = 76,
+                    Width = 80,
+                    Minimum = 6,
+                    Maximum = 20,
+                    DecimalPlaces = 1,
+                    Increment = 0.5M,
+                    Value = (decimal)Math.Max(6.0, Math.Min(20.0, currentFontSize))
+                };
+
+                btnOk = new Button { Text = "OK", DialogResult = DialogResult.OK, Left = 200, Width = 80, Top = 110 };
+                btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Left = 285, Width = 80, Top = 110 };
+
+                btnOk.Click += (s, e) =>
+                {
+                    SelectedLanguage = cbLanguage.SelectedIndex == 1 ? UiLanguage.Chinese : UiLanguage.English;
+                    SelectedColor = pnlColorPreview.BackColor;
+                    SelectedFontSize = (float)nudFontSize.Value;
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                };
+
+                this.Controls.Add(lblLang);
+                this.Controls.Add(cbLanguage);
+                this.Controls.Add(lblColor);
+                this.Controls.Add(btnColor);
+                this.Controls.Add(pnlColorPreview);
+                this.Controls.Add(lblFont);
+                this.Controls.Add(nudFontSize);
+                this.Controls.Add(btnOk);
+                this.Controls.Add(btnCancel);
+
+                this.AcceptButton = btnOk;
+                this.CancelButton = btnCancel;
+            }
         }
     }
 }
