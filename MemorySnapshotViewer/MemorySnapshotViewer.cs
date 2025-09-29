@@ -49,6 +49,12 @@ namespace MemorySnapshotViewer
         private UiLanguage _uiLanguage = UiLanguage.Chinese;
         private Color _themeColor = SystemColors.Window;
 
+        // 新增/替换：更多设置字段
+        private enum ThemePreset { Light, Dark, Solarized, HighContrast }
+        private ThemePreset _themePreset = ThemePreset.Light;
+        private string _uiFontFamily = SystemFonts.DefaultFont.FontFamily.Name;
+        private FontStyle _uiFontStyle = FontStyle.Regular;
+
         public MemorySnapshotViewer()
         {
             //
@@ -362,19 +368,25 @@ namespace MemorySnapshotViewer
         // 新增：Settings 菜单项处理
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var dlg = new SettingsForm(_uiLanguage, _themeColor, _uiFontSize))
+            using (var dlg = new SettingsForm(_uiLanguage, _themePreset, _themeColor, _uiFontSize, _uiFontFamily, _uiFontStyle))
             {
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
                     _uiLanguage = dlg.SelectedLanguage;
+                    _themePreset = dlg.SelectedThemePreset;
                     _themeColor = dlg.SelectedColor;
                     _uiFontSize = dlg.SelectedFontSize;
+                    _uiFontFamily = dlg.SelectedFontFamily;
+                    _uiFontStyle = dlg.SelectedFontStyle;
 
                     ApplySettings();
 
-                    // 可选：持久化设置到项目设置
+                    // 可选：持久化设置
+                    // Properties.Settings.Default.ThemePreset = (int)_themePreset;
                     // Properties.Settings.Default.ThemeColor = ColorTranslator.ToHtml(_themeColor);
+                    // Properties.Settings.Default.FontFamily = _uiFontFamily;
                     // Properties.Settings.Default.FontSize = (double)_uiFontSize;
+                    // Properties.Settings.Default.FontStyle = (int)_uiFontStyle;
                     // Properties.Settings.Default.Language = (int)_uiLanguage;
                     // Properties.Settings.Default.Save();
                 }
@@ -619,23 +631,63 @@ namespace MemorySnapshotViewer
         // 新增：应用设置到 UI
         private void ApplySettings()
         {
-            // 字体
+            // 应用字体（族 + 大小 + 样式）
             try
             {
-                var newFont = new Font(this.Font.FontFamily, _uiFontSize);
+                var newFont = new Font(new FontFamily(_uiFontFamily), _uiFontSize, _uiFontStyle);
                 this.Font = newFont;
                 treeListView1.Font = newFont;
             }
-            catch { /* 忽略字体错误 */ }
+            catch
+            {
+                // 忽略非法字体选择
+            }
 
-            // 主题色（示例：把选色应用为 ListView 背景色，并调整前景）
-            treeListView1.BackColor = _themeColor;
-            // 根据亮度选择前景色（黑或白）
-            var brightness = (_themeColor.R * 0.299 + _themeColor.G * 0.587 + _themeColor.B * 0.114) / 255.0;
-            treeListView1.ForeColor = brightness < 0.5 ? Color.White : Color.Black;
+            // 主题预设：设置窗体和 ListView 背景/前景
+            Color back, fore;
+            switch (_themePreset)
+            {
+                case ThemePreset.Dark:
+                    back = Color.FromArgb(30, 30, 30);
+                    fore = Color.White;
+                    break;
+                case ThemePreset.Solarized:
+                    back = ColorTranslator.FromHtml("#FDF6E3"); // Solarized Light bg
+                    fore = ColorTranslator.FromHtml("#657B83"); // base00
+                    break;
+                case ThemePreset.HighContrast:
+                    back = Color.Black;
+                    fore = Color.Yellow;
+                    break;
+                case ThemePreset.Light:
+                default:
+                    back = SystemColors.Window;
+                    fore = SystemColors.WindowText;
+                    break;
+            }
 
-            // 更新界面文本（简单运行时切换）
+            // 如果用户选择了自定义主题色（_themeColor），把它用作 ListView 的强调背景
+            try
+            {
+                this.BackColor = back;
+                this.ForeColor = fore;
+
+                treeListView1.BackColor = _themeColor; // 自定义颜色作为列表背景
+                // 若自定义颜色与预设冲突，可根据需要切换为 back
+                var brightness = (_themeColor.R * 0.299 + _themeColor.G * 0.587 + _themeColor.B * 0.114) / 255.0;
+                treeListView1.ForeColor = brightness < 0.5 ? Color.White : Color.Black;
+            }
+            catch
+            {
+                // 忽略视觉设置错误
+            }
+
+            // 更新界面文本（语言切换）
             UpdateUiStrings();
+
+            // 强制重绘
+            this.Refresh();
+            treeListView1.Refresh();
         }
 
         // 新增：运行时更新界面文本（便于演示语言切换）
@@ -678,34 +730,49 @@ namespace MemorySnapshotViewer
         private class SettingsForm : Form
         {
             private ComboBox cbLanguage;
+            private ComboBox cbThemePreset;
             private Button btnColor;
             private NumericUpDown nudFontSize;
+            private ComboBox cbFontFamily;
+            private CheckBox chkBold;
+            private CheckBox chkItalic;
             private Button btnOk;
             private Button btnCancel;
             private Panel pnlColorPreview;
 
             public UiLanguage SelectedLanguage { get; private set; }
+            public ThemePreset SelectedThemePreset { get; private set; }
             public Color SelectedColor { get; private set; }
             public float SelectedFontSize { get; private set; }
+            public string SelectedFontFamily { get; private set; }
+            public FontStyle SelectedFontStyle { get; private set; }
 
-            public SettingsForm(UiLanguage currentLang, Color currentColor, float currentFontSize)
+            public SettingsForm(UiLanguage currentLang, ThemePreset currentPreset, Color currentColor, float currentFontSize, string currentFontFamily, FontStyle currentFontStyle)
             {
                 this.Text = "Settings";
                 this.FormBorderStyle = FormBorderStyle.FixedDialog;
                 this.StartPosition = FormStartPosition.CenterParent;
-                this.ClientSize = new Size(360, 160);
+                this.ClientSize = new Size(420, 220);
                 this.MaximizeBox = false;
                 this.MinimizeBox = false;
 
                 var lblLang = new Label { Left = 12, Top = 12, Width = 100, Text = "Language:" };
-                cbLanguage = new ComboBox { Left = 120, Top = 8, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+                cbLanguage = new ComboBox { Left = 120, Top = 8, Width = 140, DropDownStyle = ComboBoxStyle.DropDownList };
                 cbLanguage.Items.Add("English");
                 cbLanguage.Items.Add("中文");
                 cbLanguage.SelectedIndex = currentLang == UiLanguage.Chinese ? 1 : 0;
 
-                var lblColor = new Label { Left = 12, Top = 44, Width = 100, Text = "Theme color:" };
-                btnColor = new Button { Left = 120, Top = 40, Width = 120, Text = "Choose..." };
-                pnlColorPreview = new Panel { Left = 250, Top = 40, Width = 40, Height = 22, BorderStyle = BorderStyle.FixedSingle, BackColor = currentColor };
+                var lblPreset = new Label { Left = 12, Top = 44, Width = 100, Text = "Theme preset:" };
+                cbThemePreset = new ComboBox { Left = 120, Top = 40, Width = 160, DropDownStyle = ComboBoxStyle.DropDownList };
+                cbThemePreset.Items.Add("Light");
+                cbThemePreset.Items.Add("Dark");
+                cbThemePreset.Items.Add("Solarized");
+                cbThemePreset.Items.Add("HighContrast");
+                cbThemePreset.SelectedIndex = (int)currentPreset;
+
+                var lblColor = new Label { Left = 12, Top = 80, Width = 100, Text = "Custom color:" };
+                btnColor = new Button { Left = 120, Top = 76, Width = 100, Text = "Choose..." };
+                pnlColorPreview = new Panel { Left = 230, Top = 76, Width = 40, Height = 22, BorderStyle = BorderStyle.FixedSingle, BackColor = currentColor };
 
                 btnColor.Click += (s, e) =>
                 {
@@ -719,38 +786,66 @@ namespace MemorySnapshotViewer
                     }
                 };
 
-                var lblFont = new Label { Left = 12, Top = 80, Width = 100, Text = "Font size:" };
+                var lblFontFam = new Label { Left = 12, Top = 116, Width = 100, Text = "Font family:" };
+                cbFontFamily = new ComboBox { Left = 120, Top = 112, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
+                foreach (var ff in FontFamily.Families)
+                {
+                    cbFontFamily.Items.Add(ff.Name);
+                }
+                // 选择当前字体族（若不存在则选第一个）
+                if (!string.IsNullOrEmpty(currentFontFamily) && cbFontFamily.Items.Contains(currentFontFamily))
+                    cbFontFamily.SelectedItem = currentFontFamily;
+                else if (cbFontFamily.Items.Count > 0)
+                    cbFontFamily.SelectedIndex = 0;
+
+                var lblFont = new Label { Left = 12, Top = 152, Width = 100, Text = "Font size:" };
                 nudFontSize = new NumericUpDown
                 {
                     Left = 120,
-                    Top = 76,
+                    Top = 148,
                     Width = 80,
                     Minimum = 6,
-                    Maximum = 20,
+                    Maximum = 36,
                     DecimalPlaces = 1,
                     Increment = 0.5M,
-                    Value = (decimal)Math.Max(6.0, Math.Min(20.0, currentFontSize))
+                    Value = (decimal)Math.Max(6.0, Math.Min(36.0, currentFontSize))
                 };
 
-                btnOk = new Button { Text = "OK", DialogResult = DialogResult.OK, Left = 200, Width = 80, Top = 110 };
-                btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Left = 285, Width = 80, Top = 110 };
+                chkBold = new CheckBox { Left = 210, Top = 148, Width = 70, Text = "Bold", Checked = (currentFontStyle & FontStyle.Bold) != 0 };
+                chkItalic = new CheckBox { Left = 290, Top = 148, Width = 70, Text = "Italic", Checked = (currentFontStyle & FontStyle.Italic) != 0 };
+
+                btnOk = new Button { Text = "OK", DialogResult = DialogResult.OK, Left = 240, Width = 80, Top = 180 };
+                btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Left = 325, Width = 80, Top = 180 };
 
                 btnOk.Click += (s, e) =>
                 {
                     SelectedLanguage = cbLanguage.SelectedIndex == 1 ? UiLanguage.Chinese : UiLanguage.English;
+                    SelectedThemePreset = (ThemePreset)cbThemePreset.SelectedIndex;
                     SelectedColor = pnlColorPreview.BackColor;
                     SelectedFontSize = (float)nudFontSize.Value;
+                    SelectedFontFamily = cbFontFamily.SelectedItem?.ToString() ?? SystemFonts.DefaultFont.FontFamily.Name;
+                    FontStyle style = FontStyle.Regular;
+                    if (chkBold.Checked) style |= FontStyle.Bold;
+                    if (chkItalic.Checked) style |= FontStyle.Italic;
+                    SelectedFontStyle = style;
+
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 };
 
                 this.Controls.Add(lblLang);
                 this.Controls.Add(cbLanguage);
+                this.Controls.Add(lblPreset);
+                this.Controls.Add(cbThemePreset);
                 this.Controls.Add(lblColor);
                 this.Controls.Add(btnColor);
                 this.Controls.Add(pnlColorPreview);
+                this.Controls.Add(lblFontFam);
+                this.Controls.Add(cbFontFamily);
                 this.Controls.Add(lblFont);
                 this.Controls.Add(nudFontSize);
+                this.Controls.Add(chkBold);
+                this.Controls.Add(chkItalic);
                 this.Controls.Add(btnOk);
                 this.Controls.Add(btnCancel);
 
